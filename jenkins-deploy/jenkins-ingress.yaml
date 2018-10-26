@@ -6,7 +6,7 @@ metadata:
   name: jenkins-ingress
 spec:
   rules:
-  - host: besptest.falabella.net
+  - host: example.algo.net
     http:
       paths:
       - path: /

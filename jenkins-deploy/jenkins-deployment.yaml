@@ -7,11 +7,11 @@ spec:
   template:
     metadata:
       labels:
-        app: jenkins
+        app: jjachurachavez/jenkins-with-ansible:1.0.0
     spec:
       containers:
       - name: jenkins
-        image: jenkins
+        image: 
         ports:
         - name: http
           containerPort: 8080
