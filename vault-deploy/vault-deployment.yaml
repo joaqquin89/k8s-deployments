@@ -1,0 +1,64 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: postgres-nfs
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: postgres-nfs
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: vault
+        - name: POSTGRES_PASSWORD
+          value: vault
+        - name: POSTGRES_DB
+          value: vault
+        image: postgres
+        name: postgres-nfs
+        volumeMounts:
+        - name: nfs2
+          mountPath: "/var/lib/postgresql/data"
+        ports:
+        - containerPort: 5432
+        resources:
+          requests:
+            memory: "800Mi"
+            cpu: "1Gi"
+          limits:
+            memory: "1000Mi"
+            cpu: "2Gi"  
+      volumes:
+        - name: nfs2
+          persistentVolumeClaim:
+            claimName: nfs2
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vault
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+      - name: vault-container
+        image: vault 
+        ports:
+        - containerPort: 8200
+          name: main
+          protocol: TCP
+      securityContext:
+       capabilities:
+         add:
+           - IPC_LOCK

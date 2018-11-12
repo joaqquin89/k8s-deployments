@@ -1,0 +1,16 @@
+#!/bin/sh
+
+#FIND LAS CHANGES IN THE FOLDER "/var/www/html/besp/repo"
+STR=`find /var/www/html/besp/repo -printf '%T+ %p\n' | sort -r | head`;
+ARRAY=$STR;
+for i in $ARRAY; do
+    echo "#############################################"
+    echo "Folder de ejecucion : ${i}"
+    echo "#############################################"
+    if [ -f "$i" ]
+    then
+        echo "archivo existe"
+    else
+        echo "archivo no existe"
+    fi
+done
