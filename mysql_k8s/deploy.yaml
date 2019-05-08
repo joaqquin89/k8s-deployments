@@ -1,0 +1,53 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mysql-db
+  labels:
+    app: cachethq
+spec:
+  selector:
+    matchLabels:
+      app: cachethq
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cachethq
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.6.26
+        name: mysql
+        ports:
+        - containerPort: 3306
+          name: mysql
+        env:
+        - name: "MYSQL_ROOT_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: password
+        - name: "MYSQL_DATABASE"
+          value: "cachetdb"
+        - name: "MYSQL_USER"
+          value: "cachetuser"
+        - name: "MYSQL_PASSWORD"
+          value: ".password"
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: config-volume
+          mountPath: /tmp/config.mysaql
+          subPath: config.mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: aws-claim
+      - name: config-volume
+        configMap:
+          name: mysql-config
